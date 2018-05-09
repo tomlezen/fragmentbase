@@ -105,13 +105,13 @@ class FbFragmentStack private constructor(
   /**
    * 切换Fragment，功能相当于replace.
    * @param kclass KClass<out Fragment>
-   * @param frgTag String
-   * @param args Array<out Pair<String, Any>>
+   * @param frgTag String fragment标签.
+   * @param args Array<out Pair<String, Any>> 需要传递的数据.
    * @return Boolean
    */
   fun switch(kclass: KClass<out Fragment>, frgTag: String = System.currentTimeMillis().toString(), vararg args: Pair<String, Any>): Boolean {
     this.botFragment?.apply {
-      if (tag == this.tag) {
+      if (frgTag == this.tag) {
         while (stack.size > 1) {
           remove(stack.pollLast())
         }
@@ -134,10 +134,10 @@ class FbFragmentStack private constructor(
   /**
    * 添加Fragment页面.
    * @param kclass KClass<out Fragment>
-   * @param frgTag String
-   * @param requestCode Int
+   * @param frgTag String fragment标签.
+   * @param requestCode Int 请求码.
    * @param clearAll Boolean 是否清除其它页面.
-   * @param args Array<out Pair<String, Any>>
+   * @param args Array<out Pair<String, Any>> 需要传递的数据.
    * @return Boolean
    */
   fun add(kclass: KClass<out Fragment>, frgTag: String = System.currentTimeMillis().toString(), requestCode: Int = 0, clearAll: Boolean = false, vararg args: Pair<String, Any>): Boolean {
@@ -160,7 +160,7 @@ class FbFragmentStack private constructor(
 
   /**
    * 移除顶端Fragment.
-   * @return Boolean
+   * @return Boolean 操作是否成功.
    */
   fun back(): Boolean {
     if (stack.size > 1) {
@@ -180,11 +180,11 @@ class FbFragmentStack private constructor(
   }
 
   /**
-   * 移除顶端Fragment并返回result值，并触发onFragmentResult方法.
-   * @param requestCode Int
-   * @param resultCode Int
-   * @param data Bundle
-   * @return Boolean
+   * 移除顶端Fragment并返回result值，同时触发onFragmentResult方法.
+   * @param requestCode Int 请求码.
+   * @param resultCode Int result状态码.
+   * @param data Bundle result数据.
+   * @return Boolean 操作是否成功.
    */
   fun back(requestCode: Int, resultCode: Int, data: Bundle?): Boolean {
     val commitResult = back()
@@ -197,7 +197,7 @@ class FbFragmentStack private constructor(
 
   /**
    * 返回按钮点击事件.
-   * @return Boolean
+   * @return Boolean true：事件被消费 false: 反之
    */
   fun onBackPress(): Boolean {
     val frg = topFragment
@@ -355,7 +355,7 @@ class FbFragmentStack private constructor(
           value.isArrayOf<CharSequence>() -> data.putCharSequenceArray(it.first, value as Array<CharSequence>?)
           value.isArrayOf<String>() -> data.putStringArray(it.first, value as Array<out String>?)
           value.isArrayOf<Parcelable>() -> data.putParcelableArray(it.first, value as Array<out Parcelable>?)
-          else -> throw IllegalArgumentException("data extra ${it.first} has wrong type ${value.javaClass.name}")
+          else -> throw IllegalArgumentException("data extra ${it.first} has wrong type ${value::class.java.name}")
         }
         is IntArray -> data.putIntArray(it.first, value)
         is LongArray -> data.putLongArray(it.first, value)

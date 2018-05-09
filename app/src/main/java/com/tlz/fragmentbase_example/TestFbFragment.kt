@@ -5,12 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import com.labo.kaji.fragmentanimations.CubeAnimation
-import com.labo.kaji.fragmentanimations.MoveAnimation
 import com.tlz.fragmentbase.FbSwipeMode
 import com.tlz.fragmentbase.FbToolbarFragment
 import com.tlz.fragmentbase.add
+import com.tlz.fragmentbase.switch
 import kotlinx.android.synthetic.main.frg_test1.*
 import java.util.*
 
@@ -22,14 +20,6 @@ import java.util.*
 class TestFbFragment: FbToolbarFragment() {
 
   private val TAG = TestFbFragment::class.java.canonicalName
-
-//  override fun onCreateFbAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
-//    return if (enter) {
-//      MoveAnimation.create(MoveAnimation.RIGHT, enter, 500)
-//    } else {
-//      CubeAnimation.create(CubeAnimation.LEFT, enter, 500)
-//    }
-//  }
 
   override fun onCreateViewBefore() {
     toolbarEnable = true
@@ -48,6 +38,7 @@ class TestFbFragment: FbToolbarFragment() {
   }
 
   override fun onLazyInit() {
+    super.onLazyInit()
     swipeBackMode = when (Random().nextInt(6)) {
       1 -> FbSwipeMode.LEFT
       2 -> FbSwipeMode.RIGHT

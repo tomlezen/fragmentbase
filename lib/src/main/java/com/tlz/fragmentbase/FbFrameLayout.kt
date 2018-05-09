@@ -51,6 +51,7 @@ class FbFrameLayout(context: Context, private val swipeCallback: FbSwipeCallback
 
   var curDragEdge = FbSwipeMode.NONE
   var dragMode = FbSwipeMode.NONE
+  var dragEnable = false
 
   init {
     helper = ViewDragHelper.create(this, ViewDragCallback())
@@ -213,7 +214,7 @@ class FbFrameLayout(context: Context, private val swipeCallback: FbSwipeCallback
   }
 
   override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-    if (dragMode != FbSwipeMode.NONE) {
+    if (dragEnable && dragMode != FbSwipeMode.NONE) {
       return helper.shouldInterceptTouchEvent(ev)
     }
     return super.onInterceptTouchEvent(ev)
@@ -221,7 +222,7 @@ class FbFrameLayout(context: Context, private val swipeCallback: FbSwipeCallback
 
   @SuppressLint("ClickableViewAccessibility")
   override fun onTouchEvent(event: MotionEvent): Boolean {
-    if (dragMode != FbSwipeMode.NONE) {
+    if (dragEnable && dragMode != FbSwipeMode.NONE) {
       helper.processTouchEvent(event)
       return true
     }

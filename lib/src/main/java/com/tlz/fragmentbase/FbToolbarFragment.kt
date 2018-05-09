@@ -119,6 +119,13 @@ abstract class FbToolbarFragment: FbFragment() {
     }
   }
 
+  @CallSuper
+  override fun onLazyInit() {
+    if (toolbarEnable) {
+      invalidateOptionsMenu()
+    }
+  }
+
   /**
    * 初始化toolbar.
    */

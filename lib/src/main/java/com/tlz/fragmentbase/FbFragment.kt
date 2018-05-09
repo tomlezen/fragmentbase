@@ -14,7 +14,7 @@ import android.view.animation.AnimationUtils
  * Data: 2018/5/4.
  * Time: 11:41.
  */
-abstract class FbFragment : Fragment(), FbFragmentResult, FbBackPress, FbLifeCycle, FbFrameLayout. FbSwipeCallback {
+abstract class FbFragment : Fragment(), FbFragmentResult, FbBackPress, FbLifeCycle, FbFrameLayout.FbSwipeCallback {
 
   private var rootView: FbFrameLayout? = null
   private var contentView: View? = null
@@ -25,7 +25,9 @@ abstract class FbFragment : Fragment(), FbFragmentResult, FbBackPress, FbLifeCyc
   private var isSwipeBack = false
 
   protected var swipeBackMode
-    set(value) { rootView?.dragMode = value }
+    set(value) {
+      rootView?.dragMode = value
+    }
     get() = rootView?.dragMode ?: FbSwipeMode.NONE
 
   /** 请求码. */
@@ -46,7 +48,13 @@ abstract class FbFragment : Fragment(), FbFragmentResult, FbBackPress, FbLifeCyc
     return if (!isSwipeBack) {
       val animation = onCreateFbAnimation(transit, enter, nextAnim)
       animation?.let {
-        FbAnimationSet(true).add(it).endWithAction { onAnimationEnd(enter) }
+        FbAnimationSet(true).add(it).endWithAction {
+          if (!isDetached) {
+            // 动画结束后才允许滑动界面.
+            rootView?.dragEnable = true
+            onAnimationEnd(enter)
+          }
+        }
       } ?: animation
     } else {
       return super.onCreateAnimation(transit, enter, nextAnim)
@@ -71,6 +79,7 @@ abstract class FbFragment : Fragment(), FbFragmentResult, FbBackPress, FbLifeCyc
     if (rootView == null && container != null) {
       onCreateViewBefore()
       rootView = FbFrameLayout(activity!!, this)
+      rootView?.dragMode = swipeBackMode
       contentView = onCreateView(inflater, container)
     }
     return if (contentView != null) {
@@ -144,7 +153,9 @@ abstract class FbFragment : Fragment(), FbFragmentResult, FbBackPress, FbLifeCyc
 
   @CallSuper
   override fun onSwipeBack() {
-    isSwipeBack = back(requestCode, resultCode, resultData)
+    if (!isSwipeBack) {
+      isSwipeBack = back(requestCode, resultCode, resultData)
+    }
   }
 
   override fun onSwipePercent(percent: Float) {
@@ -164,13 +175,14 @@ abstract class FbFragment : Fragment(), FbFragmentResult, FbBackPress, FbLifeCyc
   /**
    * onCreateView中创建View之前触发.
    */
-  protected open fun onCreateViewBefore(){}
+  protected open fun onCreateViewBefore() {}
 
   /**
    * Fragment转场动画结束触发.
    * @param enter Boolean
    */
-  protected open fun onAnimationEnd(enter: Boolean){}
+  protected open fun onAnimationEnd(enter: Boolean) {}
+
   abstract fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View
   abstract fun onInit(savedInstanceState: Bundle?)
   abstract fun onLazyInit()
